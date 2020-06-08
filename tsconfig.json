@@ -1,0 +1,20 @@
+{
+  "compilerOptions": {
+    "allowJs": true,
+    "allowSyntheticDefaultImports": true,
+    "esModuleInterop": true,
+    "isolatedModules": true,
+    "lib": ["es6", "es2017", "dom"],
+    "module": "commonjs",
+    "declaration": true,
+    "outDir": "./lib",
+    "noEmit": true,
+    "strict": false,
+    "target": "ESNext",
+    "baseUrl": "src",
+    "types": [ "jest"],
+    "typeRoots": ["./src/types", "node_modules/@types"]
+  },
+  "include": ["src", "**/__tests__/*"],
+  "exclude": ["node_modules"]
+}

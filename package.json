@@ -1,0 +1,40 @@
+{
+  "name": "expo-sqlite-orm",
+  "version": "1.5.4",
+  "description": "Simple orm for expo",
+  "main": "src/index.js",
+  "author": "Daniel Fernando Lourusso <dflourusso@gmail.com>",
+  "license": "MIT",
+  "repository": "https://github.com/dflourusso/expo-sqlite-orm",
+  "keywords": [
+    "expo",
+    "sqlite",
+    "react-native",
+    "orm"
+  ],
+  "types": "src/index.d.ts",
+  "scripts": {
+    "test": "jest",
+    "build": "tsc"
+  },
+  "prepublish": "tsc",
+  "files": [
+    "src/"
+  ],
+  "devDependencies": {
+    "@babel/preset-typescript": "^7.10.1",
+    "@types/jest": "^23.3.14",
+    "@types/node": "^14.0.11",
+    "babel-eslint": "^9.0.0",
+    "babel-jest": "^23.6.0",
+    "babel-preset-env": "^1.7.0",
+    "eslint": "^5.6.0",
+    "eslint-plugin-jest": "^21.22.0",
+    "jest": "^23.6.0",
+    "ts-jest": "^26.1.0",
+    "typescript": "^3.9.5"
+  },
+  "dependencies": {
+    "expo-sqlite": "^8.1.0"
+  }
+}
