@@ -49,17 +49,6 @@ const columnMapping: Columns = {
   teste3: { type: DataTypes.JSON }
 }
 
-// const mockDatabase = database as jest.Mock;
-//
-// mockDatabase.mockImplementationOnce(
-//     (): WebSQLDatabase => ({
-//         exec: () => {},
-//         transaction: () => {},
-//         version: 'test',
-//         readTransaction: () => {}
-//     }))
-// );
-
 describe('execute sql', () => {
   const databaseLayer = new DatabaseLayer(database(), tableName)
   it('call execute with the correct params', () => {
@@ -78,7 +67,6 @@ describe('execute sql', () => {
 
   it('promise returns the expected values', () => {
     return databaseLayer.executeSql('', []).then(res => {
-      console.log(res.rows, 'res.rows');
       expect(res.rows).toEqual([])
       expect(res.insertId).toBeNull()
     })
@@ -92,7 +80,7 @@ describe('execute sql', () => {
   })
 
   it('promise rejects', () => {
-    jest.spyOn(databaseLayer, 'executeBulkSql').mockImplementationOnce(jest.fn(async () => {throw ['Ops']}))
+    jest.spyOn(databaseLayer, 'executeBulkSql').mockImplementationOnce(jest.fn(async () => {throw 'Ops'}))
     return databaseLayer.executeSql('INSERT INTO TEST (test) VALUES (1)').catch(e => {
       expect(e).toEqual('Ops')
     })

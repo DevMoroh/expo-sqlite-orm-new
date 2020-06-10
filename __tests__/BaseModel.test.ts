@@ -18,14 +18,13 @@ describe('setProperties', () => {
   it('should not set with empty columnMapping', () => {
     const bm = new BaseModel()
     bm.setProperties({ id: 1, nome: 'Daniel' })
-    console.log(bm, 'bm');
     expect(bm.id).toBeUndefined()
     expect(bm.nome).toBeUndefined()
   })
 
   it('should set the properties', () => {
     class Tmp extends BaseModel {
-      get columnMapping() {
+      get columnMapping(): Columns {
         return {
           id: { type: DataTypes.INTEGER },
           nome: {type: DataTypes.TEXT},
@@ -37,7 +36,6 @@ describe('setProperties', () => {
 
     const tmp = new Tmp({ id: 1, nome: 'Daniel', email: '', active: false })
     // const ret = tmp.setProperties()
-    console.log(tmp, 'tmp');
     expect(tmp.id).toBe(1)
     expect(tmp.nome).toBe('Daniel')
     expect(tmp.timestamp).toBe('123456')

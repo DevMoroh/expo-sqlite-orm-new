@@ -1,20 +1,20 @@
-import DataTypes, { types } from '../src/DataTypes'
+import Types, { DataTypes } from '../src/DataTypes'
 
 class ModelExample {
   constructor(obj) {
-    Object.keys(this.constructor.columnMapping).forEach(k => {
+    Object.keys(ModelExample.columnMapping).forEach(k => {
       this[k] = obj[k] || null
     })
   }
 
   static get columnMapping() {
     return {
-      id: { type: types.INTEGER },
-      teste1: { type: types.TEXT },
-      teste2: { type: types.FLOAT },
-      teste3: { type: types.JSON },
-      teste4: { type: types.TEXT },
-      teste5: { type: types.BOOLEAN }
+      id: { type: DataTypes.INTEGER },
+      teste1: { type: DataTypes.TEXT },
+      teste2: { type: DataTypes.FLOAT },
+      teste3: { type: DataTypes.JSON },
+      teste4: { type: DataTypes.TEXT },
+      teste5: { type: DataTypes.BOOLEAN }
     }
   }
 }
@@ -32,8 +32,8 @@ const resource = new ModelExample(data2)
 
 describe('toDatabaseValue', () => {
   it('Should returns converted object to save in the database', () => {
-    const parsedValue = DataTypes.toDatabaseValue(
-      resource.constructor.columnMapping,
+    const parsedValue = Types.toDatabaseValue(
+      ModelExample.columnMapping,
       resource
     )
     const expected = {
@@ -48,7 +48,7 @@ describe('toDatabaseValue', () => {
 
 describe('propertyToDatabaseValue', () => {
   it('Convert JSON type to string', () => {
-    const parsedValue = DataTypes.propertyToDatabaseValue(types.JSON, data)
+    const parsedValue = Types.propertyToDatabaseValue(DataTypes.JSON, data);
     expect(parsedValue).toBe(JSON.stringify(data))
   })
 })
@@ -61,7 +61,7 @@ describe('toModelValue', () => {
       teste5: 1,
       teste6: 'Eita'
     }
-    const parsedValue = DataTypes.toModelValue(
+    const parsedValue = Types.toModelValue(
       ModelExample.columnMapping,
       databaseValue
     )
@@ -73,7 +73,7 @@ describe('toModelValue', () => {
       id: 1,
       teste1: 'Asdf'
     }
-    const parsedValue = DataTypes.toModelValue(
+    const parsedValue = Types.toModelValue(
       ModelExample.columnMapping,
       databaseValue
     )
@@ -83,24 +83,24 @@ describe('toModelValue', () => {
 
 describe('propertyToModelValue', () => {
   it('Convert string to JSON type', () => {
-    const parsedValue = DataTypes.propertyToModelValue(
-      types.JSON,
+    const parsedValue = Types.propertyToModelValue(
+      DataTypes.JSON,
       JSON.stringify(data)
     )
     expect(parsedValue).toEqual(data)
   })
 
   it('Convert undefined to JSON type', () => {
-    const parsedValue = DataTypes.propertyToModelValue(
-      types.JSON,
+    const parsedValue = Types.propertyToModelValue(
+      DataTypes.JSON,
       undefined
     )
     expect(parsedValue).toBe(null)
   })
 
   it('Convert empty string to JSON type', () => {
-    const parsedValue = DataTypes.propertyToModelValue(
-      types.JSON,
+    const parsedValue = Types.propertyToModelValue(
+      DataTypes.JSON,
       ''
     )
     expect(parsedValue).toBe(null)
