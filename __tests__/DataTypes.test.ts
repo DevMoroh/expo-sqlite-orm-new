@@ -1,7 +1,7 @@
 import Types, { DataTypes } from '../src/DataTypes'
 
 class ModelExample {
-  constructor(obj) {
+  constructor(obj: object) {
     Object.keys(ModelExample.columnMapping).forEach(k => {
       this[k] = obj[k] || null
     })

@@ -1,7 +1,7 @@
 import QueryBuilder from './query_builder'
-import {WebSQLDatabase} from "expo-sqlite";
+import {SQLResultSetRowList, WebSQLDatabase} from "expo-sqlite";
 import {SQLError, SQLResultSet, SQLTransaction} from "expo-sqlite/src/SQLite.types";
-import {ModelObject} from "./Repository";
+import {ModelObject, UpdateObject} from "./Repository";
 import {Columns} from "./BaseModel";
 import {Options, Where} from "./query_builder/read";
 
@@ -15,16 +15,16 @@ export default class DatabaseLayer {
     this.tableName = tableName
   }
 
-  async executeBulkSql(sqls: string[], params: any[] = []): Promise<any> {
+  async executeBulkSql(sqls: string[], params: any[] = []): Promise<SQLResultSet[]> {
     const database = this.database;
-    return new Promise((txResolve, txReject) => {
+    return new Promise((txResolve: any, txReject) => {
       database.transaction(tx => {
         Promise.all(sqls.map((sql: string, index: number) => {
           return new Promise((sqlResolve, sqlReject) => {
             tx.executeSql(
               sql,
               params[index],
-              (_, resultSet) => {
+              (_, resultSet: SQLResultSet) => {
                 sqlResolve(resultSet)
               },
               (transaction: SQLTransaction, error: SQLError): boolean => {
@@ -38,7 +38,7 @@ export default class DatabaseLayer {
     })
   }
 
-  async executeSql(sql: string, params: any[] = []): Promise<any> {
+  async executeSql(sql: string, params: any[] = []): Promise<SQLResultSet> {
     return this.executeBulkSql([sql], [params])
       .then(res => res[0])
       .catch(errors => { throw errors })
@@ -60,11 +60,12 @@ export default class DatabaseLayer {
     return this.executeSql(sql, params).then(({ insertId }) => this.find(insertId))
   }
 
-  update(obj) {
-    const sql = QueryBuilder.update(this.tableName, obj)
-    const { id, ...props } = obj
-    const params = Object.values(props)
-    return this.executeSql(sql, [...params, id])
+  update(obj: UpdateObject) {
+    const sql = QueryBuilder.update(this.tableName, obj);
+    const { primaryKey, ...props } = obj;
+
+    const params = Object.values(props);
+    return this.executeSql(sql, [...params, primaryKey])
   }
 
   bulkInsertOrReplace(objs: ModelObject[]) {
@@ -89,19 +90,19 @@ export default class DatabaseLayer {
 
   find(id: string|number) {
     const sql = QueryBuilder.find(this.tableName)
-    return this.executeSql(sql, [id]).then(({ rows }) => rows[0])
+    return this.executeSql(sql, [id]).then(({ rows }) => rows.item(0))
   }
 
   findBy(where: Where = {}) {
     const options = { where, limit: 1 }
     const sql = QueryBuilder.query(this.tableName, options)
     const params = Object.values(options.where)
-    return this.executeSql(sql, params).then(({ rows }) => rows[0])
+    return this.executeSql(sql, params).then(({ rows }) => rows.item(0))
   }
 
-  query(options: Options = {}) {
-    const sql = QueryBuilder.query(this.tableName, options)
-    const params = Object.values(options.where || {})
+  query(options: Options = {}): Promise<SQLResultSetRowList> {
+    const sql = QueryBuilder.query(this.tableName, options);
+    const params = Object.values(options.where || {});
     return this.executeSql(sql, params).then(({ rows }) => rows)
   }
 }

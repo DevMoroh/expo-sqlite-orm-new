@@ -29,10 +29,10 @@ export default class BaseModel {
 
   [key: string]: any;
 
-  constructor(obj = {}) {
-    this.setProperties(obj)
+  constructor(obj: object = {}) {
+    this.setProperties(obj);
     let handler = {
-          get: function(target: BaseModel, prop: string, receiver: any) {
+          get: (target: BaseModel, prop: string, receiver: any) => {
               if(this[prop] === undefined && target.properties[prop] !== undefined) {
                   return target.properties[prop];
               }
@@ -50,7 +50,12 @@ export default class BaseModel {
         // const my = BaseModel.getInstance() as BaseModel & { [key: string]: string };
         this.properties[k] = props[k]
       } else if (isFunction(cm[k].default)) {
-          this.properties[k] = cm[k].default();
+          let def =  cm[k].default;
+
+          if (def) {
+              def = def.bind(this);
+              this.properties[k] = def();
+          }
       } else {
           this.properties[k] = null
       }
@@ -93,13 +98,18 @@ export default class BaseModel {
 
   static update(obj: ModelObject) {
     const model = this.getInstance();
-    return model.repository.update(obj).then(res => model.setProperties(res))
+    const { [model.primaryKey]: primaryKey, ...props } = obj;
+
+    return model.repository.update({...props, primaryKey}).then(res => model.setProperties(res))
   }
 
   save() {
     if (this.getPrimaryKey()) {
+
+      const { [this.primaryKey]: primaryKey, ...properties } = this.properties;
+
       return this.repository
-        .update(this)
+        .update({...properties, primaryKey})
         .then(res => this.setProperties(res))
     } else {
       return this.repository
